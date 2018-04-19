@@ -29,13 +29,27 @@ public class App {
 
     private static void explore(List<Job> jobs) {
         // Your amazing code below...
-//        String searchTerm = "Java";
-//        Optional<Job> foundJob = luckySearchJob(jobs, searchTerm);
-//        System.out.println(foundJob
-//                .map(Job::getTitle)
-//                .orElse("No job found"));
-        displayCompaniesMenu(jobs);
+        String startsWith = "N";
+        displayCompanyNamesThatStartWith(jobs, startsWith);
     }
+
+    private static void displayCompanyNamesThatStartWith(List<Job> jobs, String startsWith) {
+        jobs.stream()
+                .map(Job::getCompany)
+                .distinct()
+                .sorted()
+                .peek(company -> System.out.println("---" + company))
+                .filter(company -> company.startsWith(startsWith))
+                .forEach(System.out::println);
+    }
+
+    private static void foundJob(List<Job> jobs, String searchTerm) {
+        Optional<Job> foundJob = luckySearchJob(jobs, searchTerm);
+        System.out.println(foundJob
+                .map(Job::getTitle)
+                .orElse("No job found"));
+    }
+
 
     private static void displayCompaniesMenu(List<Job> jobs) {
         List<String> companies = jobs.stream()
