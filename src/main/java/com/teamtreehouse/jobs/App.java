@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class App {
@@ -28,13 +29,34 @@ public class App {
 
     private static void explore(List<Job> jobs) {
         // Your amazing code below...
-        String searchTerm = "Java";
-        Optional<Job> foundJob = luckySearchJob(jobs, searchTerm);
-        System.out.println(foundJob
-                .map(Job::getTitle)
-                .orElse("No job found"));
-//        getSnippetWordCountsStream(jobs).forEach(
-//                (key, value) -> System.out.printf("%s occurs %d times %n", key, value));
+//        String searchTerm = "Java";
+//        Optional<Job> foundJob = luckySearchJob(jobs, searchTerm);
+//        System.out.println(foundJob
+//                .map(Job::getTitle)
+//                .orElse("No job found"));
+        displayCompaniesMenu(jobs);
+    }
+
+    private static void displayCompaniesMenu(List<Job> jobs) {
+        List<String> companies = jobs.stream()
+                .map(Job::getCompany)
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+
+        displayCompaniesMenuUsingRange(companies);
+    }
+
+    private static void displayCompaniesMenuImperatively(List<String> companies) {
+        for (int i = 0; i < 20; i++) {
+            System.out.printf("%02d. %s %n", i + 1, companies.get(i));
+        }
+    }
+
+    private static void displayCompaniesMenuUsingRange(List<String> companies) {
+        IntStream.rangeClosed(1, 20)
+                .mapToObj(i -> String.format("%02d. %s", i, companies.get(i - 1)))
+                .forEach(System.out::println);
     }
 
     private static Optional<Job> luckySearchJob(List<Job> jobs, String searchTerm) {
@@ -56,6 +78,10 @@ public class App {
                 .average();
     }
 
+    private static void printSnippetWordCounts(Map<String, Long> wordCounts) {
+        wordCounts.forEach(
+                (key, value) -> System.out.printf("%s occurs %d times %n", key, value));
+    }
 
     private static Map<String, Long> getSnippetWordCountsStream(List<Job> jobs) {
         return jobs.stream()
