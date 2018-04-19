@@ -4,9 +4,7 @@ import com.teamtreehouse.jobs.model.Job;
 import com.teamtreehouse.jobs.service.JobService;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,9 +28,34 @@ public class App {
 
     private static void explore(List<Job> jobs) {
         // Your amazing code below...
-        getSnippetWordCountsStream(jobs).forEach(
-                (key, value) -> System.out.printf("%s occurs %d times %n", key, value));
+        String searchTerm = "Java";
+        Optional<Job> foundJob = luckySearchJob(jobs, searchTerm);
+        System.out.println(foundJob
+                .map(Job::getTitle)
+                .orElse("No job found"));
+//        getSnippetWordCountsStream(jobs).forEach(
+//                (key, value) -> System.out.printf("%s occurs %d times %n", key, value));
     }
+
+    private static Optional<Job> luckySearchJob(List<Job> jobs, String searchTerm) {
+        return jobs.stream()
+                .filter(job -> job.getTitle().contains(searchTerm))
+                .findFirst();
+    }
+
+    private static Optional getLongestCompanyName(List<Job> jobs) {
+        return jobs.stream()
+                .map(Job::getCompany)
+                .max(Comparator.comparingInt(String::length));
+    }
+
+    private static OptionalDouble getAverageCompanyNameLength(List<Job> jobs) {
+        return jobs.stream()
+                .map(Job::getCompany)
+                .mapToInt(String::length)
+                .average();
+    }
+
 
     private static Map<String, Long> getSnippetWordCountsStream(List<Job> jobs) {
         return jobs.stream()
