@@ -44,19 +44,29 @@ public class App {
                 .sorted()
                 .collect(Collectors.toList());
 
-        displayCompaniesMenuUsingRange(companies);
+        displayCompaniesMenuUsingIterate(companies);
     }
 
-    private static void displayCompaniesMenuImperatively(List<String> companies) {
-        for (int i = 0; i < 20; i++) {
-            System.out.printf("%02d. %s %n", i + 1, companies.get(i));
-        }
+    private static void displayCompaniesMenuUsingIterate(List<String> companies) {
+        int pageSize = 20;
+        int numPages = companies.size() / pageSize;
+
+        IntStream.iterate(1, i -> i + pageSize)
+                .mapToObj(i -> String.format("%d. %s", i, companies.get(i - 1)))
+                .limit(numPages)
+                .forEach(System.out::println);
     }
 
     private static void displayCompaniesMenuUsingRange(List<String> companies) {
         IntStream.rangeClosed(1, 20)
                 .mapToObj(i -> String.format("%02d. %s", i, companies.get(i - 1)))
                 .forEach(System.out::println);
+    }
+
+    private static void displayCompaniesMenuImperatively(List<String> companies) {
+        for (int i = 0; i < 20; i++) {
+            System.out.printf("%02d. %s %n", i + 1, companies.get(i));
+        }
     }
 
     private static Optional<Job> luckySearchJob(List<Job> jobs, String searchTerm) {
