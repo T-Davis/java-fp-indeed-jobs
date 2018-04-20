@@ -4,8 +4,11 @@ import com.teamtreehouse.jobs.model.Job;
 import com.teamtreehouse.jobs.service.JobService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -29,8 +32,47 @@ public class App {
 
     private static void explore(List<Job> jobs) {
         // Your amazing code below...
-        String startsWith = "N";
-        displayCompanyNamesThatStartWith(jobs, startsWith);
+        
+    }
+
+    private static void checkForJobs(List<Job> jobs) {
+        Job first = jobs.get(0);
+        System.out.println("First job: " + first);
+        Predicate<Job> caJobChecker = job -> job.getState().equals("CA");
+
+        Job caJob = jobs.stream()
+                .filter(caJobChecker)
+                .findFirst()
+                .orElseThrow(NullPointerException::new);
+
+        emailIfMatches(caJob, caJobChecker.and(App::isJuniorJob));
+    }
+
+    private static void changeDateFormat(List<Job> jobs) {
+
+        Function<String, LocalDateTime> indeedDateConverter =
+                dateString -> LocalDateTime.parse(
+                        dateString,
+                        DateTimeFormatter.RFC_1123_DATE_TIME);
+
+        Function<LocalDateTime, String> siteDateStringConverter =
+                date -> date.format(DateTimeFormatter.ofPattern("M / d / YY"));
+
+        Function<String, String> indeedToSiteDateStringConverter = indeedDateConverter.andThen(siteDateStringConverter);
+
+        jobs.stream()
+                .map(Job::getDateTimeString)
+                .map(indeedToSiteDateStringConverter)
+                .limit(5)
+                .collect(Collectors.toList())
+                .forEach(System.out::println);
+    }
+
+
+    private static void emailIfMatches(Job job, Predicate<Job> checker) {
+        if (checker.test(job)) {
+            System.out.println("I am sending an email about " + job);
+        }
     }
 
     private static void displayCompanyNamesThatStartWith(List<Job> jobs, String startsWith) {
