@@ -32,7 +32,25 @@ public class App {
 
     private static void explore(List<Job> jobs) {
         // Your amazing code below...
-        
+
+        Function<String, String> converter = createDateStringConverter(
+                DateTimeFormatter.RFC_1123_DATE_TIME,
+                DateTimeFormatter.ISO_DATE_TIME);
+
+        jobs.stream()
+                .map(Job::getDateTimeString)
+                .map(converter)
+                .limit(5)
+                .collect(Collectors.toList())
+                .forEach(System.out::println);
+    }
+
+    private static Function<String, String> createDateStringConverter(
+            DateTimeFormatter inFormatter,
+            DateTimeFormatter outFormatter) {
+        return dateString -> {
+            return LocalDateTime.parse(dateString, inFormatter).format(outFormatter);
+        };
     }
 
     private static void checkForJobs(List<Job> jobs) {
